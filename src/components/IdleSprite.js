@@ -6,7 +6,9 @@ export default function IdleSprite(
     {
         infor,
         // Walking
-        isIdle
+        isIdle,
+        // espelho
+        validateMirrorMode
     }) {
         const [frameIndex, setFrameIndex] = useState(0);
         const totalFrames = infor.framePositions.length;
@@ -39,14 +41,21 @@ export default function IdleSprite(
     }, [isIdle]);
 
     const getIdleSprite = () => {
-        const backgroundPositionX = infor.framePositions[frameIndex];
+
+        // Organizando o erro de falha do quando quando muda de posição
+        const validarCalculoEspelho = 
+          validateMirrorMode ? (infor.framePositions[frameIndex]+1) : infor.framePositions[frameIndex];
+          
+        // Posição X e Y da folha de Sprinte
+        const backgroundPositionX = validarCalculoEspelho;
         const backgroundPositionY = infor.framesPerRow;    
-    console.log(infor.framePositions[frameIndex] , infor.framesPerRow, infor)
+
         return {
           background: `url(${infor.spriteSheet})`,
           backgroundPosition: `-${backgroundPositionX}px -${backgroundPositionY}px`,
           width: `${infor.spriteWidth}px`,
           height: `${infor.spriteHeight}px`,
+          transform: validateMirrorMode ? 'scaleX(-1)' : 'scaleX(1)',
         };
     };
 

@@ -5,7 +5,9 @@ export default function WalkSprite(
     {
         infor,
         // Walking
-        isWalking
+        isWalking,
+        // espelho
+        validateMirrorMode
     }) {
         const [frameIndex, setFrameIndex] = useState(0);
         const [position, setPosition] = useState(0);
@@ -43,13 +45,20 @@ export default function WalkSprite(
       }, [isWalking]);
 
     const getWalkSprite = () => {
-        const backgroundPositionX = infor.framePositions[frameIndex];
+      // Organizando o erro de falha do quando quando muda de posição
+      const validarCalculoEspelho = 
+        validateMirrorMode ? (infor.framePositions[frameIndex]+1) : infor.framePositions[frameIndex];
+
+        // Posição X e Y da folha de Sprinte
+        const backgroundPositionX = validarCalculoEspelho;
         const backgroundPositionY = infor.framesPerRow;
+
         return {
           background: `url(${infor.spriteSheet})`,
           backgroundPosition: `-${backgroundPositionX}px -${backgroundPositionY}px`,
           width: `${infor.spriteWidth}px`,
           height: `${infor.spriteHeight}px`,
+          transform: validateMirrorMode ? 'scaleX(-1)' : 'scaleX(1)',
         };
     };
 
