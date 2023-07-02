@@ -1,7 +1,7 @@
 .character {
   width: 100px;
   height: 100px;
-  background-color: black;
+  background-color: fuchsia;
   position: relative;
   transition: left 0.3s;
 }

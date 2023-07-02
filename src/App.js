@@ -1,32 +1,72 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
-import idleSprite1 from './sprites/idle1.png';
-import idleSprite2 from './sprites/idle2.png';
-import idleSprite3 from './sprites/idle3.png';
-import idleSprite4 from './sprites/idle4.png';
-import idleSprite5 from './sprites/idle5.png';
-import idleSprite6 from './sprites/idle6.png';
-import idleSprite7 from './sprites/idle7.png';
-import walkSprite1 from './sprites/walk1.png';
-import walkSprite2 from './sprites/walk2.png';
+import IdleSprite from './components/IdleSprite';
+import StartWalkSprite from './components/StartWalkSprite';
+import WalkSprite from './components/WalkSprite';
+
+
+
+import spriteSheet from './sprites/character-sprite-sheet.png';
 
 function App() {
+  const [isIdle, setIsIdle] = useState(false);
+  const [isStartWalking, setIsStartWalking] = useState(false);
   const [isWalking, setIsWalking] = useState(false);
+  
   const [position, setPosition] = useState(0);
-  const [idleFrame, setIdleFrame] = useState(1);
-  // puxa de volta
-  const [step, setStep] = useState(0);
+  const spriteWidth = 114; // Largura de cada quadro do sprite
+  const spriteHeight = 93; // Altura de cada quadro do sprite
+  // 22 - 141 = 119
+  // 141 - 260 = 119
+  const framePositions = [22, 141, 260, 379, 498, 617]; // Posições dos quadros em pixels
+  const framesPerRow = 17; // Quantidade de quadros por linha na folha de sprite
+  const animationSpeed = 100; // Velocidade da transição entre os quadros em milissegundos
+
+  const inforIdleSprite = {
+    spriteWidth,
+    spriteHeight,
+    framePositions,
+    framesPerRow,
+    animationSpeed,
+    spriteSheet,
+  }
+
+  const inforStartWalkSprite = {
+    spriteWidth,
+    spriteHeight,
+    framePositions: [22, 141, 260, 379, 498, 617, 736, 855, 974, 1093, 1212, 1331, 1450, 1569, 1688],
+    framesPerRow: 117,
+    animationSpeed: 70,
+    spriteSheet
+  }
+
+  const inforWalkSprite = {
+    spriteWidth,
+    spriteHeight,
+    framePositions: [22, 141, 260, 379, 498, 617, 736, 855, 974, 1093, 1212, 1331, 1450, 1569, 1688, 1807],
+    framesPerRow: 215,
+    animationSpeed: 70,
+    spriteSheet
+  }
 
   useEffect(() => {
     const handleKeyDown = (event) => {
       if (event.key === 'ArrowRight') {
-        setIsWalking(true);
+        // Para status parado
+        setIsIdle(true);
+        // Inicia status primeiros movimentos
+        setIsStartWalking(false)
       }
     };
 
     const handleKeyUp = (event) => {
       if (event.key === 'ArrowRight') {
-        setIsWalking(false);
+        // Inicia status parado
+        setIsIdle(false);
+        // Para status primeiros movimentos
+        setIsStartWalking(true)
+        // Para status movimentos
+        setIsWalking(false)
       }
     };
 
@@ -39,77 +79,48 @@ function App() {
     };
   }, []);
 
-  useEffect(() => {
-    let intervalId;
+  const validarStartWalk = () => {
 
+    // Inicia caminhada
+    setIsWalking(true)
+
+    // Para start e parado
+    setIsStartWalking(true)
+    setIsIdle(true);
+  }
+
+  const getWalkSprite = () => {
+    return <WalkSprite infor={inforWalkSprite} isWalking={isWalking} />;
+  }
+
+  const getStartWalkSprite = () => {
+    return <StartWalkSprite infor={inforStartWalkSprite} isStartWalking={isStartWalking} validarStartWalk={validarStartWalk}/>;
+  }
+
+  const getAlltWalking = () => {
+    console.log("getAlltWalking: ", isWalking,isStartWalking)
     if (isWalking) {
-      intervalId = setInterval(() => {
-        setPosition((prevPosition) => prevPosition + 10);
-        setStep((prevStep) => (prevStep === 0 ? 1 : 0));
-      }, 200);
-    } else {
-      setPosition(0);
+      return getWalkSprite();
     }
-
-    return () => {
-      clearInterval(intervalId);
-    };
-  }, [isWalking]);
-
-  useEffect(() => {
-    let intervalId;
-
-    if (!isWalking) {
-      intervalId = setInterval(() => {
-        setIdleFrame((prevFrame) => {
-          if (prevFrame === 7) {
-            return 1;
-          } else {
-            return prevFrame + 1;
-          }
-        });
-      }, 200);
-    } else {
-      setIdleFrame(1);
+    if (!isStartWalking) {
+      return getStartWalkSprite()
     }
-
-    return () => {
-      clearInterval(intervalId);
-    };
-  }, [isWalking]);
+  }
 
   const getIdleSprite = () => {
-    switch (idleFrame) {
-      case 1:
-        return idleSprite1;
-      case 2:
-        return idleSprite2;
-      case 3:
-        return idleSprite3;
-      case 4:
-        return idleSprite4;
-      case 5:
-        return idleSprite5;
-      case 6:
-        return idleSprite6;
-      case 7:
-        return idleSprite7;
-      default:
-        return idleSprite1;
-    }
-  };
+    return <IdleSprite infor={inforIdleSprite} isIdle={isIdle}/>;
+  }
 
   return (
     <div className="App">
       <h1>Castlevania: Symphony of the Night</h1>
       <div
-        className={`character ${isWalking ? 'walk' : ''}`}
+        className={`character ${isIdle ? 'walk' : ''}`}
         style={{ left: position }}
       >
-        <img
-          src={isWalking ? (step === 0 ? walkSprite1 : walkSprite2) : getIdleSprite()}
-          alt="Character"
-        />
+        {isIdle ? getAlltWalking() : getIdleSprite()}
+        {/* {getWalkSprite() } */}
+        
       </div>
     </div>
   );
