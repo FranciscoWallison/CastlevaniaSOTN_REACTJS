@@ -11,8 +11,6 @@ export default function StartWalkSprite(
         validateMirrorMode
     }) {
         const [frameIndex, setFrameIndex] = useState(0);
-        const [position, setPosition] = useState(0);
-
 
         // zera 
         const [step, setStep] = useState(0);
@@ -28,8 +26,7 @@ export default function StartWalkSprite(
     
         if (!isStartWalking ) {
           intervalId = setInterval(() => {
-            setPosition((prevPosition) => prevPosition + 10);
-    
+
             setFrameIndex((prevFrame) => {
               console.log("setWalkFrame: ", prevFrame, prevFrame === 14)
               if ((prevFrame) === 14) {
@@ -44,8 +41,6 @@ export default function StartWalkSprite(
             setStep((prevStep) => (prevStep === 0 ? 1 : 0));
         }, infor.animationSpeed);
        
-        } else {
-          setPosition(0);
         }
     
         return () => {

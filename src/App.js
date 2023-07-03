@@ -13,9 +13,6 @@ function App() {
   const [isStartWalking, setIsStartWalking] = useState(false);
   const [isWalking, setIsWalking] = useState(false);
   const [isFlipped, setIsFlipped] = useState(false); // tem como objetivo espelhar
-  
-  
-  const [position, setPosition] = useState(0);
 
   // TESTES
   const [isSetas, setSetas] = useState("ArrowRight");
@@ -243,7 +240,6 @@ function App() {
      
       <div
         className={`container ${isIdle ? 'walk' : ''}`}
-        style={{ left: position }}
       >
         {isIdle ? getAlltWalking() : getIdleSprite()}
         {/* {getChangeSideWhenWalkSprite() } */}

@@ -12,8 +12,6 @@ export default function ChangeSideWhenWalkSprite(
         validarStartWalk,
     }) {
         const [frameIndex, setFrameIndex] = useState(0);
-        const [position, setPosition] = useState(0);
-
 
         // zera 
         const [step, setStep] = useState(0);
@@ -30,7 +28,6 @@ export default function ChangeSideWhenWalkSprite(
     
         if (!isStartWalking ) {
           intervalId = setInterval(() => {
-            setPosition((prevPosition) => prevPosition + 10);
     
             setFrameIndex((prevFrame) => {
               console.log("setWalkFrame: ", prevFrame)
@@ -45,33 +42,14 @@ export default function ChangeSideWhenWalkSprite(
             });
             
             setStep((prevStep) => (prevStep === 0 ? 1 : 0));
-        }, infor.animationSpeed);
+          }, infor.animationSpeed);
        
-        } else {
-          setPosition(0);
         }
     
         return () => {
           clearInterval(intervalId);
         };
       }, [isStartWalking]);
-
-
-      // useEffect(() => {
-      //   let timeoutId;
-    
-      //   if (isStartWalking) {
-      //     const animationSpeed = validateMirrorMode ? infor.flipAnimationSpeed : infor.walkAnimationSpeed;
-    
-      //     timeoutId = setTimeout(() => {
-      //       setFrameIndex((prevIndex) => (prevIndex + 1) % totalFrames);
-      //     }, animationSpeed);
-    
-      //     return () => {
-      //       clearTimeout(timeoutId);
-      //     };
-      //   }
-      // }, [isStartWalking, validateMirrorMode]);
 
     const getChangeSideWhenWalkSprite = () => {
       // Organizando o erro de falha do quando quando muda de posição
