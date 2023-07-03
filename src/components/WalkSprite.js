@@ -11,9 +11,6 @@ export default function WalkSprite(
     }) {
         const [frameIndex, setFrameIndex] = useState(0);
 
-        // zera 
-        const [step, setStep] = useState(0);
-
         const totalFrames = infor.framePositions.length;
 
     useEffect(() => {
@@ -29,7 +26,6 @@ export default function WalkSprite(
 
             });
             
-            setStep((prevStep) => (prevStep === 0 ? 1 : 0));
         }, infor.animationSpeed);
        
         }

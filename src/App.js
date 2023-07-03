@@ -172,7 +172,7 @@ function App() {
     return <ChangeSideWhenWalkSprite 
         infor={inforChangeSideWhenWalkSprite}
         validarStartWalk={validarStartWalk}
-        isStartWalking={isWalking}
+        isWalking={isWalking}
         validateMirrorMode={isFlipped} 
       />;
   }

@@ -5,7 +5,7 @@ export default function ChangeSideWhenWalkSprite(
     {
         infor,
         // Walking
-        isStartWalking,
+        isWalking,
         // espelho
         validateMirrorMode,
 
@@ -26,7 +26,7 @@ export default function ChangeSideWhenWalkSprite(
     useEffect(() => {
         let intervalId;
     
-        if (!isStartWalking ) {
+        if (!isWalking ) {
           intervalId = setInterval(() => {
     
             setFrameIndex((prevFrame) => {
@@ -49,7 +49,7 @@ export default function ChangeSideWhenWalkSprite(
         return () => {
           clearInterval(intervalId);
         };
-      }, [isStartWalking]);
+      }, [isWalking]);
 
     const getChangeSideWhenWalkSprite = () => {
       // Organizando o erro de falha do quando quando muda de posição
