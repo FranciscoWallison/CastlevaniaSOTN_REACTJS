@@ -1,0 +1,48 @@
+.character {
+  width: 100px;
+  height: 100px;
+  background-color: fuchsia;
+  position: relative;
+  transition: left 0.3s;
+}
+
+.walk {
+  left: 300px;
+}
+
+/* Setas container */
+.container {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+/* Setas testes */
+.basket-left,
+.basket-right,
+.basket-up,
+.basket-down {
+  width: 0;
+  height: 0;
+  border-style: solid;
+}
+
+.basket-left {
+  border-width: 10px 20px 10px 0;
+  border-color: transparent #000 transparent transparent;
+}
+
+.basket-right {
+  border-width: 10px 0 10px 20px;
+  border-color: transparent transparent transparent #000;
+}
+
+.basket-up {
+  border-width: 0 10px 20px 10px;
+  border-color: transparent transparent #000 transparent;
+}
+
+.basket-down {
+  border-width: 20px 10px 0 10px;
+  border-color: #000 transparent transparent transparent;
+}

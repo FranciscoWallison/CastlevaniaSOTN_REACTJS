@@ -16,7 +16,10 @@ function App() {
 
   // TESTES
   const [isSetas, setSetas] = useState("ArrowRight");
-  const [isChangeSideWalking, setIsChangeSideWalking] = useState("ArrowLeft");
+  const [isChangeSideWalking, setIsChangeSideWalking] = useState(false);
+
+  // posição
+  const [lastDirection, setLastDirection] = useState('right');
 
   // Dimensão do sprite na folha
   const spriteWidth = 110; // Largura de cada quadro do sprite
@@ -82,13 +85,28 @@ function App() {
   useEffect(() => {
     const handleKeyDown = (event) => {
 
+      let validStart = true;
+
+      if (event.key === 'ArrowRight' && lastDirection !== 'right') {
+        setLastDirection('right');
+        validStart = false;
+        setIsChangeSideWalking(true)
+      } else if (event.key === 'ArrowLeft' && lastDirection !== 'left') {
+        setLastDirection('left');
+        validStart = false;
+        setIsChangeSideWalking(true)
+      }else {
+        setIsChangeSideWalking(false)
+      }
+
+
       setSetas(event.key)
       
       if (event.key === 'ArrowRight') {
         // Para status parado
         setIsIdle(true);
         // Inicia status primeiros movimentos
-        setIsStartWalking(false);
+        setIsStartWalking(!validStart);
 
         // Mudando de posição
         setIsFlipped(false);
@@ -96,15 +114,27 @@ function App() {
         // Para status parado
         setIsIdle(true);
         // Inicia status primeiros movimentos
-        setIsStartWalking(false);
-
-        // Mudando de posição
-        setIsFlipped(true);
+        setIsStartWalking(!validStart);
+        
       }
 
     };
 
     const handleKeyUp = (event) => {
+
+      let validStart = true;
+
+      if (event.key === 'ArrowRight' && lastDirection !== 'right') {
+        setLastDirection('right');
+        validStart = false;
+        setIsChangeSideWalking(true)
+      } else if (event.key === 'ArrowLeft' && lastDirection !== 'left') {
+        setLastDirection('left');
+        validStart = false;
+        setIsChangeSideWalking(true)
+      }else {
+        setIsChangeSideWalking(false)
+      }
 
       setSetas(event.key)
 
@@ -112,7 +142,7 @@ function App() {
         // Inicia status parado
         setIsIdle(false);
         // Para status primeiros movimentos
-        setIsStartWalking(true)
+        setIsStartWalking(validStart)
         // Para status movimentos
         setIsWalking(false)
 
@@ -122,7 +152,7 @@ function App() {
         // Inicia status parado
         setIsIdle(false);
         // Para status primeiros movimentos
-        setIsStartWalking(true)
+        setIsStartWalking(validStart)
         // Para status movimentos
         setIsWalking(false)
 
@@ -139,7 +169,7 @@ function App() {
       document.removeEventListener('keydown', handleKeyDown);
       document.removeEventListener('keyup', handleKeyUp);
     };
-  }, []);
+  }, [lastDirection]);
 
   // Valida o movimento de iniciar a caminhada
   const validarStartWalk = () => {
@@ -150,22 +180,6 @@ function App() {
     // Para start e parado
     setIsStartWalking(true)
     setIsIdle(true);
-
-    setIsChangeSideWalking(isSetas);
-  }
-
-  const validarStartWalkAndChangeSideWhenWalk = () => {
-    // 
-    if (isSetas === "ArrowRight" && isChangeSideWalking === "ArrowLeft" ) {
-      return true
-    }
-    // 
-    if (isSetas === "ArrowLeft" && isChangeSideWalking === "ArrowRight" ) {
-      return true
-    }
-
-    return false
-
   }
 
   const getChangeSideWhenWalkSprite = () => {
@@ -191,10 +205,7 @@ function App() {
 
   const getAlltWalking = () => {
     
-    if (validarStartWalkAndChangeSideWhenWalk()) {
-      console.log('====================================');
-      console.log("validarStartWalkAndChangeSideWhenWalk: ", validarStartWalkAndChangeSideWhenWalk(), isSetas ,isChangeSideWalking);
-      console.log('====================================');
+    if (isChangeSideWalking) {
       return getChangeSideWhenWalkSprite();
     }
 
