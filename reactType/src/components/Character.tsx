@@ -1,12 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import idleSpriteSheet from './sprites/character-sprite-sheet.png'; // Importe a folha de sprite do Idle
 import alucard from './infor/alucard.json';
+import { type } from 'os';
 
 type CharacterMovement = 'Idle' | 'StartWalk' | 'Walk' | 'ChangeSideWhenWalk';
+type Direction = 'Right' | 'Left'
+
 
 const Character: React.FC = () => {
   const [movement, setMovement] = useState<CharacterMovement>('Idle');
   const [isFlipped, setIsFlipped] = useState<boolean>(false);
+
+  // Adicione a seguinte variável de estado
+  const [currentDirection, setCurrentDirection] = useState<Direction>('Right');
+  // Adicione a variável de estado movementDirection
+  const [movementDirection, setMovementDirection] = useState<Direction>('Right');
 
 
   // REFATORAR
@@ -27,11 +35,29 @@ const Character: React.FC = () => {
       // Verifique se o jogador pressionou a tecla para a esquerda ou direita
       if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
         // Defina a direção correta e inicie a animação de mudança de lado
-        setIsFlipped(event.key === 'ArrowRight');
-        setMovement('ChangeSideWhenWalk');
-      }else {
-        setMovement('StartWalk');
+        setIsFlipped(event.key === 'ArrowLeft');
+        // setMovement('ChangeSideWhenWalk');
       }
+
+      switch (event.key) {
+        case 'ArrowLeft':
+          if (
+            (currentDirection === 'Right' && !isFlipped)
+          ) {
+            setMovement('ChangeSideWhenWalk');
+          }
+          setCurrentDirection('Left');
+          break;
+        case 'ArrowRight':
+          if (
+            (currentDirection === 'Left' && isFlipped)
+          ) {
+            setMovement('ChangeSideWhenWalk');
+          }
+          setCurrentDirection('Right');
+          break;
+      }
+
     };
 
     window.addEventListener('keydown', handleKeyDown);
@@ -39,7 +65,7 @@ const Character: React.FC = () => {
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, []);
+  }, [isFlipped]);
 
   useEffect(() => {
     let animationInterval: NodeJS.Timeout;
@@ -61,41 +87,33 @@ const Character: React.FC = () => {
         animationInterval = setInterval(() => {
           setFrameIndex((prevFrame) => {
             const nextIndex = prevFrame + 1;
-  
             if (nextIndex === alucard[movement].framePositions.length) {
               // A animação de StartWalk terminou, continue para o movimento Walk
               setMovement('Walk');
             }
-  
             return nextIndex >= alucard[movement].framePositions.length ? 0 : nextIndex;
           });
         }, alucard[movement].animationSpeed);
         break;
       case 'Walk':
-        // Lógica para o movimento Walk
-        animationInterval = setInterval(() => {    
-          setFrameIndex((prevFrame) => {
-            console.log("Walk: ", prevFrame)
-            const nextIndex = prevFrame + 1;
-            return nextIndex >= alucard[movement].framePositions.length ? 0 : nextIndex;
-          });
-          
-        }, alucard[movement].animationSpeed);
-        break;
-      case 'ChangeSideWhenWalk':
         animationInterval = setInterval(() => {
           setFrameIndex((prevFrame) => {
             const nextIndex = prevFrame + 1;
-            console.log("ChangeSideWhenWalk: ", nextIndex ,alucard[movement].framePositions.length)
-            if (nextIndex === alucard[movement].framePositions.length) {
-              // A animação de ChangeSideWhenWalk terminou, volte para o movimento Walk
-              setMovement('Walk');
-            }
-  
             return nextIndex >= alucard[movement].framePositions.length ? 0 : nextIndex;
-          });
+          });          
         }, alucard[movement].animationSpeed);
-        
+        break;
+      case 'ChangeSideWhenWalk':
+          animationInterval = setInterval(() => {
+            setFrameIndex((prevFrame) => {
+              const nextIndex = prevFrame + 1;
+              if (nextIndex === alucard[movement].framePositions.length) {
+                // A animação de ChangeSideWhenWalk terminou, volte para o movimento Walk
+                setMovement('Idle');
+              }    
+              return nextIndex >= alucard[movement].framePositions.length ? 0 : nextIndex;
+            });
+          }, alucard[movement].animationSpeed);        
         break;
       default:
         break;
