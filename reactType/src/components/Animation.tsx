@@ -43,12 +43,18 @@ class Animation extends React.Component<{}, State> {
     window.addEventListener('keydown', this.handleKeyDown);
     window.addEventListener('keyup', this.handleKeyUp);
     this.startAnimation(); // Inicia a animação assim que o componente for montado
+    // window.addEventListener('blur', this.handleBlur); // Adiciona um event listener para quando a janela perder o foco
   }
 
   componentWillUnmount() {
     window.removeEventListener('keydown', this.handleKeyDown);
     window.removeEventListener('keyup', this.handleKeyUp);
     this.stopAnimation(); // Certifique-se de parar a animação antes de desmontar o componente
+    // window.addEventListener('blur', this.handleBlur); // Adiciona um event listener para quando a janela perder o foco
+  }
+
+  handleBlur = (event: KeyboardEvent) => {
+    this.handleKeyUp(event); // Chama o handleKeyUp quando a janela perde o foco para parar a animação
   }
 
   handleKeyDown = (event: KeyboardEvent) => {
@@ -77,18 +83,18 @@ class Animation extends React.Component<{}, State> {
                     });
 
                 }else {
-                    // if (!isStartWalk) {
-                    //     this.setState({
-                    //         animation: 'StartWalk',
-                    //         isWalking: false
-                    //     });
+                    if (!isStartWalk) {
+                        this.setState({
+                            animation: 'StartWalk',
+                            isWalking: false
+                        });
 
-                    // }else{
-                    //     this.setState({
-                    //         animation: 'Walk',
-                    //         isWalking: true
-                    //     });
-                    // }
+                    }else{
+                        this.setState({
+                            animation: 'Walk',
+                            isWalking: true
+                        });
+                    }
 
                 }
                 this.setState({
@@ -109,18 +115,18 @@ class Animation extends React.Component<{}, State> {
                     });
                     
                 }else {
-                    // if (!isStartWalk) {
-                    //     this.setState({
-                    //         animation: 'StartWalk',
-                    //         isWalking: false
-                    //     });
+                    if (!isStartWalk) {
+                        this.setState({
+                            animation: 'StartWalk',
+                            isWalking: false
+                        });
 
-                    // }else{
-                    //     this.setState({
-                    //         animation: 'Walk',
-                    //         isWalking: true
-                    //     });
-                    // }
+                    }else{
+                        this.setState({
+                            animation: 'Walk',
+                            isWalking: true
+                        });
+                    }
 
                 }
 
@@ -137,6 +143,7 @@ class Animation extends React.Component<{}, State> {
     };
 
     handleKeyUp = (event: KeyboardEvent) => {
+        debugger;
         this.stopAnimation();
 
         const { 
@@ -180,18 +187,65 @@ class Animation extends React.Component<{}, State> {
         // Lógica para controlar os movimentos do personagem
         switch (animation)
         {
+            case 'ChangeSideWhenWalk':
+                animationIntervalId = setInterval(() => {
+
+                    // Atualize a folha de sprite com a animação correspondente
+                    let { 
+                        frameIndex,
+                        playAlucard,
+                        animation,
+                        isChangeSideWhenWalk
+                    } = this.state;
+
+                    if (isChangeSideWhenWalk) {
+                        return;
+                    }
+
+                    const nextIndex = frameIndex + 1;
+                    if (nextIndex === playAlucard[animation].framePositions.length) {
+                        // A animação de ChangeSideWhenWalk terminou, volte para o movimento Walk
+                        this.setState({
+                            isChangeSideWhenWalk:false
+                        });
+                    }
+
+                    this.setState({
+                        frameIndex: 
+                            nextIndex >= playAlucard[animation].framePositions.length ? 0 : nextIndex
+                        });
+                }, playAlucard[animation].animationSpeed);
+            break;
             case 'Walk':
-                // debugger;
-                // animationIntervalId = setInterval(() => {
-                //     // Atualize a folha de sprite com a animação correspondente
-                //     this.setState({
-                //         frameIndex: ((prevFrame: any) => {
-                //             const nextIndex = prevFrame + 1;
-                //             return nextIndex >= playAlucard[animation].framePositions.length ? 0 : nextIndex;          
-                //         })
-                //     });
-                // }, playAlucard[animation].animationSpeed);
-            // break;
+               
+                animationIntervalId = setInterval(() => {
+                    // Atualize a folha de sprite com a animação correspondente
+                    let { 
+                        frameIndex,
+                        playAlucard,
+                        animation,
+                        isChangeSideWhenWalk,
+                        isWalking,
+                        isLeftPressed,
+                        isRightPressed
+                    } = this.state;
+                         
+                    if (!isWalking && (isLeftPressed || isRightPressed)) {
+            
+                        this.setState({
+                            isWalking: false,
+                            animation: 'Idle'
+                        });
+                    } else {
+                        const nextIndex = frameIndex + 1;
+                        this.setState({
+                            frameIndex: 
+                                nextIndex >= playAlucard[animation].framePositions.length ? 0 : nextIndex
+                        });
+                    }
+                                
+                }, playAlucard[animation].animationSpeed);
+            break;
             default:
                 animationIntervalId = setInterval(() => {
                     // Atualize a folha de sprite com a animação correspondente
@@ -205,7 +259,7 @@ class Animation extends React.Component<{}, State> {
                     this.setState({
                         frameIndex: 
                             nextIndex >= playAlucard[animation].framePositions.length ? 0 : nextIndex
-                        });
+                    });
                 }, playAlucard[animation].animationSpeed);
             break;
         }
