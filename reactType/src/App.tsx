@@ -1,14 +1,11 @@
-import React from 'react';
 import './App.css';
-import Character from './components/Character'
-import Animation from './components/Animation'
+import ControlesComponent from './components/ControlesComponent'
 
 
 function App() {
   return (
     <div className="App">
-      {/* <Character/> */}
-      <Animation/>
+      <ControlesComponent/>
     </div>
   );
 }

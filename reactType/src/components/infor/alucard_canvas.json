@@ -1,0 +1,24 @@
+{
+    "frameWidth": 110,
+    "frameHeight": 93,
+    "Idle" : {
+        "framePositions": [23, 142, 261, 380, 499, 618],
+        "framesPerRow": 17,
+        "animationSpeed": 140
+    },
+    "StartWalk" : {
+        "framePositions": [23, 142, 261, 380, 499, 618, 737, 856, 975, 1094, 1213, 1332, 1451, 1570, 1689],
+        "framesPerRow": 116,
+        "animationSpeed": 140
+    },
+    "Walk": {
+        "framePositions": [23, 142, 261, 380, 499, 618, 737, 856, 975, 1094, 1213, 1332, 1451, 1570, 1689, 1808],
+        "framesPerRow": 215,
+        "animationSpeed": 120
+    },
+    "ChangeSideWhenWalk": {
+        "framePositions": [23, 142, 261, 380, 499, 618, 737, 856, 975, 1094],
+        "framesPerRow": 314,
+        "animationSpeed": 140
+    }
+}
