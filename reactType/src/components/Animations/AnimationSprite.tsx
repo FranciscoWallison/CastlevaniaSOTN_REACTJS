@@ -1,17 +1,21 @@
 import React from 'react';
 // Importe a folha de sprite
-import spriteSheet from '../sprites/character-sprite-sheet.png';
-import alucard from '../infor/alucard_canvas.json';
 
+type inforSprits = { framePositions: number[]; framesPerRow: number; animationSpeed: number; } ;
 
 interface IAnimationSpritsProps {
   isPlaying: boolean,
   isSpiritsQuantity: boolean,
+  isFlipped: boolean,
   onAnimationStop: any,
-  // animation
-  animationSprit: 'Idle' | 'StartWalk' | 'Walk' | 'ChangeSideWhenWalk'
+  // configurações
+  alucard: inforSprits,
+  spriteSheet: any,
+  frameWidth: number,
+  frameHeight: number,
+  getFrameIndex: any,
+  setFrameIndex: any
 }
-// const AnimationSprite: React.Component<IMyProps> = (props: IMyProps) => {
 
 class AnimationSprite extends React.Component<IAnimationSpritsProps, any> {
   canvasRef!: HTMLCanvasElement | null;
@@ -45,7 +49,7 @@ class AnimationSprite extends React.Component<IAnimationSpritsProps, any> {
 
 
   componentDidUpdate(prevProps: any) {
-    // if (prevProps.frameIndex !== this.state.frameIndex) {
+    // if (prevProps.frameIndex !== this.props.getFrameIndex()) {
     if (prevProps.isPlaying !== this.props.isPlaying) {
       if (this.props.isPlaying) {
         this.componentDidMount();
@@ -57,9 +61,10 @@ class AnimationSprite extends React.Component<IAnimationSpritsProps, any> {
 
   animate = async () => {
     // Configurações de animação
-    const frameWidth = alucard.frameWidth; // Largura de cada frame
-    const frameHeight = alucard.frameHeight; // Altura de cada frame
-    const totalFrames = alucard[this.props.animationSprit].framePositions.length; // Número total de frames
+    const frameWidth = this.props.frameWidth; // Largura de cada frame
+    const frameHeight = this.props.frameHeight; // Altura de cada frame
+    const totalFrames = this.props.alucard.framePositions.length; // Número total de frames
+    const framePositions = this.props.alucard.framePositions;
 
     // Obter o canvas e contexto
     const canvas = this.canvasRef;
@@ -72,17 +77,16 @@ class AnimationSprite extends React.Component<IAnimationSpritsProps, any> {
 
       // Carregar a imagem da folha de sprite
       const spriteImage = new Image();
-      spriteImage.src = spriteSheet;
+      spriteImage.src = this.props.spriteSheet; 
 
       // Inverter a animação horizontalmente, se necessário
-      const isFlipped = false
-      const scaleX = isFlipped ? -1 : 1;
+      const scaleX = this.props.isFlipped ? -1 : 1;
       let width = frameWidth;
-      let spriteIndex = alucard[this.props.animationSprit].framePositions[this.state.frameIndex]
-      console.log('====================================');
-      console.log("spriteIndex: ", spriteIndex);
-      console.log('====================================');
-      if (isFlipped) {
+      let spriteIndex = framePositions[this.props.getFrameIndex()]
+      
+      console.log("isNaN: ", isNaN(spriteIndex),  framePositions[this.props.getFrameIndex()] , framePositions, this.props.getFrameIndex())
+
+      if (this.props.isFlipped) {
         width = - frameWidth;
         spriteIndex = spriteIndex + 1
       }
@@ -92,7 +96,7 @@ class AnimationSprite extends React.Component<IAnimationSpritsProps, any> {
       context.drawImage(
         spriteImage,
         spriteIndex,
-        alucard[this.props.animationSprit].framesPerRow,
+        this.props.alucard.framesPerRow,
         frameWidth,
         frameHeight,
         0,
@@ -101,22 +105,17 @@ class AnimationSprite extends React.Component<IAnimationSpritsProps, any> {
         frameHeight
       );
 
-
-      
-      const nextIndex = this.state.frameIndex + 1 ;
-      // Atualizar o índice do frame
-      this.setState((prevState: any) => ({
-        frameIndex: nextIndex === totalFrames ? 0 : nextIndex,
-      }));
-      // Validar quando a sprit tem que parar quando é por quantidade de frames
-      if (
+      await this.delay(this.props.alucard.animationSpeed).then( () => {
+        const nextIndex = this.props.getFrameIndex() + 1 ;
+        // Atualizar o índice do frame
+        this.props.setFrameIndex(nextIndex >= totalFrames ? 0 : nextIndex);
+        // Validar quando a sprit tem que parar quando é por quantidade de frames
+        if (
         this.props.isSpiritsQuantity && 
-        nextIndex === totalFrames
+        nextIndex >= totalFrames
         ) {
-          this.stopAnimation();
-      }
-
-      await this.delay(alucard[this.props.animationSprit].animationSpeed).then( () => {
+          this.props.onAnimationStop();
+        }
         // Agendar o próximo quadro da animação
         this.animationId = requestAnimationFrame(this.animate);
 
